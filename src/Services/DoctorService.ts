@@ -5,91 +5,86 @@ import { getCustomRepository } from "typeorm";
 import { UserRepository } from "../Repositories/UserRepository";
 
 import { DoctorRepository } from "../Repositories/DoctorRepository";
+import { DoctorItf } from "../interfaces/DoctorItf";
 
 export class DoctorService{
-    createDoctor(clinicId : number, name : string, lastname : string, lastsecondname : string, curp : string, 
-        cedula : string, foto : string, especialidad: string, email : string, phone : string, password : string){
+    createDoctor(d : DoctorItf) : Promise<Doctor>{
         
         let doc  = new Doctor();
-        doc.clinica_id = clinicId;
-        doc.nombre = name;
-        doc.apellido_paterno = lastname;
-        doc.apellido_materno = lastsecondname;
-        doc.curp = curp;
-        doc.especialidad = especialidad;
-        doc.email = email;
-        doc.telefono = phone;
+        doc.clinica_id = d.clinica_id;
+        doc.nombre = d.nombre;
+        doc.apellido_paterno = d.apellido_paterno;
+        doc.apellido_materno = d.apellido_materno;
+        doc.curp = d.curp;
+        doc.especialidad = d.especialidad;
+        doc.email = d.email;
+        doc.telefono = d.telefono;
         doc.status = true;
 
         let user = new Usuario();
-        user.usuario = email;
-        user.password = password;
+        user.usuario = d.email;
+        user.password = d.email;
         user.role = 'doctor';
 
         let userRepo = getCustomRepository(UserRepository);
         
-        userRepo.save(user).then(function(value){
+        return userRepo.save(user).then(function(value){
             fs.mkdir('./files/' + value.user_id, (err) => {
                 if (err) throw err;
                 });
 
-            fs.writeFile('./files/' + value.user_id + '/cedula.txt', cedula, {encoding : 'base64'}, function(err){
+            fs.writeFile('./files/' + value.user_id + '/cedula.txt', d.url_cedula, {encoding : 'base64'}, function(err){
                 if (err) throw err;
             });
-            fs.writeFile('./files/' + value.user_id + '/foto.txt', foto, {encoding : 'base64'}, function(err){
+            fs.writeFile('./files/' + value.user_id + '/foto.txt', d.url_foto, {encoding : 'base64'}, function(err){
                 if (err) throw err;
             });
 
-            doc.url_cedula = 'files' + value.user_id + '/cedula';
-            doc.url_foto = 'files' + value.user_id + '/foto';
+            doc.url_cedula = 'files/' + value.user_id + '/cedula';
+            doc.url_foto = 'files/' + value.user_id + '/foto';
 
             doc.user_id = value.user_id;
             let doctorRepo = getCustomRepository(DoctorRepository);
 
-            doctorRepo.save(doc).then(function(value){
-                return value;
-            }).catch(function(error){
-                throw new Error('Error al crear al doctor' + error);
-            })
+            return doctorRepo.save(doc);
 
         }).catch(function(error){
             throw new Error('Error al crear al usuario' + error);
         });
     }
 
-    updateDoctor(id_doctor : number, name : string, lastname : string, lastsecondname : string, curp : string, 
-        cedula : string, foto : string, especialidad: string, email : string, phone : string, status : boolean){
+    updateDoctor(d : DoctorItf) : Promise<Doctor>{
 
         let doctorRepo = getCustomRepository(DoctorRepository);
-        doctorRepo.findById(id_doctor).then(function(value){
-            let doc = value;
-            doc.nombre = name;
-            doc.apellido_paterno = lastname;
-            doc.apellido_materno = lastsecondname;
-            doc.curp = curp;
-            doc.especialidad = especialidad;
-            doc.email = email;
-            doc.telefono = phone;
-            doc.status = status;
+        return doctorRepo.findById(d.doctor_id).then(function(value){
+            let doc = value[0];
+            doc.nombre = d.nombre;
+            doc.apellido_paterno = d.apellido_paterno;
+            doc.apellido_materno = d.apellido_materno;
+            doc.curp = d.curp;
+            doc.especialidad = d.especialidad;
+            doc.email = d.email;
+            doc.telefono = d.telefono;
+            doc.status = d.status;
 
-            fs.writeFile('./files/' + value.user_id + '/cedula.txt', cedula, {encoding : 'base64'}, function(err){
+            fs.writeFile('./files/' + value[0].user_id + '/cedula.txt', d.url_cedula, {encoding : 'base64'}, function(err){
                 if (err) throw err;
             });
-            fs.writeFile('./files/' + value.user_id + '/foto.txt', foto, {encoding : 'base64'}, function(err){
+            fs.writeFile('./files/' + value[0].user_id + '/foto.txt', d.url_foto, {encoding : 'base64'}, function(err){
                 if (err) throw err;
             });
 
-            doctorRepo.save(doc).then(function(value){
-                return value;
-            })
-            .catch(function(error){
-                throw new Error('Error al actualizar al doctor' + error);
-            })
+            return doctorRepo.save(doc);
         })
     }
 
     deleteDoctor(id_doctor : number){
         let doctorRepo = getCustomRepository(DoctorRepository);
         doctorRepo.delete(id_doctor);
+    }
+
+    getDoctor(id : number) : Promise<Doctor[]>{
+        let doctorRepo = getCustomRepository(DoctorRepository);
+        return doctorRepo.findById(id);
     }
 }
