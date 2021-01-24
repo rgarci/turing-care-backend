@@ -8,6 +8,6 @@ export class DoctorRepository extends Repository<Doctor>{
     }
 
     findById(doctor_id : number){
-        return this.findOne(doctor_id);
+        return this.find({where : {doctor_id : doctor_id}});
     }
 }
