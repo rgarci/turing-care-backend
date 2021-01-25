@@ -3,11 +3,12 @@ import { Patient } from "../entity/Patient";
 
 @EntityRepository(Patient)
 export class PatientRepository extends Repository<Patient>{
-    findByDoctor(doctor){
-        return this.find({where : {id_doctor : doctor}});
+    
+    findByDoctor(doctor: number){
+        return this.find({where : {doctor_id : doctor}});
     }
 
-    findById(id){
-        return this.findOne(id);
+    findById(id : number){
+        return this.find({where : { paciente_id : id}});
     }
 }
