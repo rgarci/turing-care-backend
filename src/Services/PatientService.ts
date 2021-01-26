@@ -4,7 +4,15 @@ import { Register } from "../entity/Register";
 import { PatientItf } from "../interfaces/PatientItf";
 import { PatientRepository } from "../Repositories/PatientRepository";
 
+/**
+ * Servicio para la conexión con api de pacientes
+ */
 export class PatientService{
+
+    /**
+     * Crea un paciente
+     * @param patientReq mensaje con info de paciente 
+     */
     createPatient( patientReq : PatientItf) : Promise<Patient>{
             
         let patient : Patient = new Patient();
@@ -26,6 +34,10 @@ export class PatientService{
 
     }
 
+    /**
+     * Actualiza la info de un paciente
+     * @param patientReq mensaje con info de paciente
+     */
     updatePatient(patientReq : PatientItf){
             
         let patientRepo : PatientRepository = getCustomRepository(PatientRepository);
@@ -48,16 +60,28 @@ export class PatientService{
         
     }
 
+    /**
+     * Elimina un paciente dado un id
+     * @param id_patient id de paciente
+     */
     deletePatient(id_patient : number) : Promise<DeleteResult> {
         let patientRepo : PatientRepository = getCustomRepository(PatientRepository);
         return patientRepo.delete(id_patient);
     }
 
+    /**
+     * Obtiene paciente por id
+     * @param id id de paciente
+     */
     gatPatient(id: number) : Promise<Patient[]>{
         let patientRepo = getCustomRepository(PatientRepository);
         return patientRepo.findById(id);
     }
 
+    /**
+     * Obtiene un listado de pacientes por id de doctor
+     * @param id_doctor id de doctor
+     */
     getPatientByDoctor(id_doctor): Promise<Patient[]>{
         let patientRepo = getCustomRepository(PatientRepository);
         return patientRepo.findByDoctor(id_doctor);

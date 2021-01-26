@@ -9,9 +9,16 @@ import { RegisterItf } from "./interfaces/RegisterItf";
 import { PatientService } from "./Services/PatientService";
 import { PatientItf } from "./interfaces/PatientItf";
 
+/**
+ * Puerto del servidor
+ */
 let port = 3000;
 
+/**
+ * Crea la conexión con la bd
+ */
 createConnection();
+
 
 var doctorSvc : DoctorService = new DoctorService();
 var registerSvc : RegisterService = new RegisterService();
@@ -21,6 +28,9 @@ var bodyParser = require('body-parser')
 var app = express();
 app.use(bodyParser.json());
 
+/**
+ * Endpoint para obtención de doctor
+ */
 app.get('/doctor', function(req, res){
     let id_doctor = req.query.id;
     console.log(id_doctor);
@@ -36,6 +46,9 @@ app.get('/doctor', function(req, res){
     })
 });
 
+/**
+ * Endpoint para crear un doctor
+ */
 app.post('/doctor', function (req, res) {
     try {
         let doc : DoctorItf = req.body;
@@ -47,6 +60,9 @@ app.post('/doctor', function (req, res) {
     }
 });
 
+/**
+ * Endpoint para actualizar un doctor
+ */
 app.put('/doctor', function (req, res) {
     try {
         let doc : DoctorItf = req.body;
@@ -59,14 +75,16 @@ app.put('/doctor', function (req, res) {
 });
 
 
-
+/**
+ * Endpoint para obtener registros
+ */
 app.get('/registro/:id', function(req, res){
     let idRegister = req.params.id;
     console.log(idRegister);  
     registerSvc.getRegister(idRegister).then(function (value){
         let register : RegisterItf = value[0];
         if(register === undefined){
-            res.status(500).send('No se encontró al doctor ' + idRegister);
+            res.status(500).send('No se encontró el registro ' + idRegister);
         }else{
             res.send(register);
         }
@@ -75,6 +93,9 @@ app.get('/registro/:id', function(req, res){
     });
 });
 
+/**
+ * Endpoint para crear un registro
+ */
 app.post('/registro', function (req, res) {
     try {
         let register : RegisterItf = req.body;
@@ -82,10 +103,13 @@ app.post('/registro', function (req, res) {
             res.send(value);
         })
     } catch (error) {
-        console.log("Error al crear al doctor");
+        console.log("Error al crear el registro");
     }
 });
 
+/**
+ * endpoint para actualizar registro
+ */
 app.put('/registro', function (req, res) {
     try {
         let register : RegisterItf = req.body;
@@ -97,14 +121,16 @@ app.put('/registro', function (req, res) {
     }
 });
 
-
+/**
+ * Endpoint para obtener los registros de un paciente
+ */
 app.get('/historial/:idPatient', function(req, res){
     let idPatient = req.params.idPatient;
     console.log(idPatient);  
     registerSvc.getHistorial(idPatient).then(function (value){
         
         if(value === undefined){
-            res.status(500).send('No se encontró al doctor ' + idPatient);
+            res.status(500).send('No se encontró los registros del paciente ' + idPatient);
         }else{
             res.send(value);
         }
@@ -113,13 +139,16 @@ app.get('/historial/:idPatient', function(req, res){
     });
 });
 
+/**
+ * Endpoint para localizar un paciente
+ */
 app.get('/paciente/:id', function(req, res){
     let idPatient = req.params.id;
     console.log(idPatient);  
     patientSvc.gatPatient(idPatient).then(function (value){
         let patient : PatientItf = value[0];
         if(patient === undefined){
-            res.status(500).send('No se encontró al doctor ' + idPatient);
+            res.status(500).send('No se encontró al paciente ' + idPatient);
         }else{
             res.send(patient);
         }
@@ -128,6 +157,9 @@ app.get('/paciente/:id', function(req, res){
     });
 });
 
+/**
+ * Endpoint para crear un paciente
+ */
 app.post('/paciente', function (req, res) {
     try {
         let paciente : PatientItf = req.body;
@@ -135,10 +167,13 @@ app.post('/paciente', function (req, res) {
             res.send(value);
         })
     } catch (error) {
-        console.log("Error al crear al doctor");
+        console.log("Error al crear al paciente");
     }
 });
 
+/**
+ * Endpoint para actualizar un paciente
+ */
 app.put('/paciente', function (req, res) {
     try {
         let paciente : PatientItf = req.body;
@@ -150,7 +185,9 @@ app.put('/paciente', function (req, res) {
     }
 });
 
-
+/**
+ * Endpoint para obtener los pacientes de un doctor
+ */
 app.get('/doctor/:idDoctor/pacientes', function(req, res){
     let idDoctor = req.params.idDoctor;
     console.log(idDoctor);  
@@ -166,6 +203,9 @@ app.get('/doctor/:idDoctor/pacientes', function(req, res){
     });
 });
 
+/**
+ * Inicia el servidor
+ */
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`)
   })

@@ -1,3 +1,6 @@
+/**
+ * Interfaz para el paso de mensajes de paciente
+ */
 export interface PatientItf{
     paciente_id: number;
     doctor_id: number;

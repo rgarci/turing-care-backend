@@ -1,5 +1,8 @@
 import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
 
+/**
+ * Mapeo para la entidad Registro médico
+ */
 @Entity('registro')
 export class Register {
 

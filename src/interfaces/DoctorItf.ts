@@ -1,3 +1,6 @@
+/**
+ * Interfaz para el paso de mensajes de doctor
+ */
 export interface DoctorItf{
     doctor_id: number;
     clinica_id: number;

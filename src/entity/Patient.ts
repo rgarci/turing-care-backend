@@ -1,5 +1,8 @@
 import {Entity, PrimaryGeneratedColumn, Column} from "typeorm";
 
+/**
+ * Mapeo para la entidad paciente
+ */
 @Entity('paciente')
 export class Patient{
     @PrimaryGeneratedColumn()

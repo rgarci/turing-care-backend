@@ -1,3 +1,6 @@
+/**
+ * Interfaz para el paso de mensajes de registro médico
+ */
 export interface RegisterItf{
     registro_id: number;
     doctor_id: number;

@@ -7,7 +7,14 @@ import { UserRepository } from "../Repositories/UserRepository";
 import { DoctorRepository } from "../Repositories/DoctorRepository";
 import { DoctorItf } from "../interfaces/DoctorItf";
 
+/**
+ * Servicio para la conexión con api de doctores
+ */
 export class DoctorService{
+    /**
+     * Crea un médico
+     * @param d mensaje con info de dotor
+     */
     createDoctor(d : DoctorItf) : Promise<Doctor>{
         
         let doc  = new Doctor();
@@ -53,6 +60,10 @@ export class DoctorService{
         });
     }
 
+    /**
+     * Actualiza un doctor
+     * @param d mensaje con info de doctor
+     */
     updateDoctor(d : DoctorItf) : Promise<Doctor>{
 
         let doctorRepo = getCustomRepository(DoctorRepository);
@@ -78,11 +89,19 @@ export class DoctorService{
         })
     }
 
+    /**
+     * Elimina un doctor dado el id
+     * @param id_doctor id de doctor
+     */
     deleteDoctor(id_doctor : number){
         let doctorRepo = getCustomRepository(DoctorRepository);
         doctorRepo.delete(id_doctor);
     }
 
+    /**
+     * Obtener doctor por id
+     * @param id id de doctor
+     */
     getDoctor(id : number) : Promise<Doctor[]>{
         let doctorRepo = getCustomRepository(DoctorRepository);
         return doctorRepo.findById(id);

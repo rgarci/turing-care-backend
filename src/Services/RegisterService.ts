@@ -7,8 +7,15 @@ import { RegisterItf } from "../interfaces/RegisterItf";
 import { DoctorRepository } from "../Repositories/DoctorRepository";
 import { PatientRepository } from "../Repositories/PatientRepository";
 
+/**
+ * Servicio para la conexión con api de registros
+ */
 export class RegisterService{
 
+    /**
+     * Crea un registro médico
+     * @param registerReq mensaje con info de registro
+     */
     createRegister(registerReq : RegisterItf) : Promise<Register>{
         
         let register = new Register();
@@ -44,6 +51,10 @@ export class RegisterService{
         });
     }
 
+    /**
+     * Actualiza un registro médico
+     * @param registerReq info con mensaje de registro
+     */
     updateRegister(registerReq : RegisterItf) : Promise<Register>{
          let registerRepo = getCustomRepository(RegisterRepository);
 
@@ -64,17 +75,28 @@ export class RegisterService{
          });
     }
 
+    /**
+     * Elimina un registro médico dado el id
+     * @param id_register id de registro
+     */
     deleteRegister( id_register: number){
         let registerRepo : RegisterRepository = getCustomRepository(RegisterRepository);
         registerRepo.delete(id_register);
     }
 
+    /**
+     * Obtiene un registro dado el id
+     * @param id_register id de registro
+     */
     getRegister(id_register) : Promise<Register[]>{
         let registerRepo : RegisterRepository = getCustomRepository(RegisterRepository);
         return registerRepo.findById(id_register);
     }
 
-
+    /**
+     * Obtiene los registros de un paciente
+     * @param id_patient id de paciente
+     */
     getHistorial(id_patient): Promise<Register[]>{
         let registerRepo : RegisterRepository = getCustomRepository(RegisterRepository);
         return registerRepo.findByPatientId(id_patient);
