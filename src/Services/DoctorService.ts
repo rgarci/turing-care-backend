@@ -102,8 +102,25 @@ export class DoctorService{
      * Obtener doctor por id
      * @param id id de doctor
      */
-    getDoctor(id : number) : Promise<Doctor[]>{
+    getDoctor(id : number) : Promise<Doctor>{
         let doctorRepo = getCustomRepository(DoctorRepository);
-        return doctorRepo.findById(id);
+        return doctorRepo.findById(id).then(function(value){
+            return value[0];
+        }).catch(function(error){
+            throw new Error('Error al crear al usuario' + error);
+        });
+    }
+
+    /**
+     * Obtiene el doctor por el user_id
+     * @param id_user id del usuario
+     */
+    getDoctorByUser(id_user : number): Promise<Doctor>{
+        let doctorRepo = getCustomRepository(DoctorRepository);
+        return doctorRepo.findByUserId(id_user).then(function(value){
+            return value[0];
+        }).catch(function(error){
+            throw new Error('Error al crear al usuario' + error);
+        });
     }
 }

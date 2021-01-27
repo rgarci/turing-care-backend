@@ -43,10 +43,15 @@ app.post('/login', function (req, res, next) {
             'role' : user.role
         }
         if(user.password === password){
-            var token = jwt.sign(usuario, SECRET, { expiresIn: 300 }) ;
-            var refreshToken = randtoken.uid(256) ;
-            refreshTokens[refreshToken] = username;
-            res.json({token: 'JWT ' + token, refreshToken: refreshToken, user_id : user.user_id}) ;
+            doctorSvc.getDoctorByUser(user.user_id).then(function(value){
+                var token = jwt.sign(usuario, SECRET, { expiresIn: 300 }) ;
+                var refreshToken = randtoken.uid(256) ;
+                refreshTokens[refreshToken] = username;
+                res.json({token: 'JWT ' + token, refreshToken: refreshToken, user_id : user.user_id, doctor_id : value.doctor_id}) ;
+            }).catch(function(err){
+                console.log(err)
+                res.status(500).send(err);
+            });
         }else{
             res.send(401);
         }
