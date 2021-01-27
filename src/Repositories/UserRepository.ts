@@ -19,7 +19,7 @@ export class UserRepository extends Repository<Usuario>{
      * Localiza usuarios por username
      * @param username username
      */
-    findByUsername(username : string){
-        return this.findOne(username);
+    findByUsername(username : string) : Promise<Usuario[]>{
+        return this.find({where : {usuario: username}});
     }
 }

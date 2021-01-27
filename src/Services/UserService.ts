@@ -29,12 +29,12 @@ export class UserService{
     updatePassword(username: string, pass : string): Promise<Usuario>{
         let userRepo : UserRepository = getCustomRepository(UserRepository);
         return userRepo.findByUsername(username).then(function(value){
-            let user : Usuario = value;
+            let user : Usuario = value[0];
             user.password = pass;
             return userRepo.save(user);
         }).catch(function(err){
             throw new Error("Error al actualizar la contraseña de " + username); 
-        })
+        });
     }
 
     /**
@@ -44,5 +44,14 @@ export class UserService{
     deleteUser(id_user) : Promise<DeleteResult>{
         let userRepo : UserRepository = getCustomRepository(UserRepository);
         return userRepo.delete(id_user);
+    }
+
+    getUserByUsername(username : string) : Promise<Usuario>{
+        let userRepo : UserRepository = getCustomRepository(UserRepository);
+        return userRepo.findByUsername(username).then(function(value){
+            return value[0];
+        }).catch(function(err){
+            throw new Error("Error en la búsqueda de usuario " + username);
+        });
     }
 }
