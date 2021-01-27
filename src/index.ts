@@ -38,11 +38,15 @@ app.post('/login', function (req, res, next) {
     var password = req.body.password;
     usrSvc.getUserByUsername(username).then(function(value){
         let user : Usuario = value;
+        var usuario = {
+            'username' : user.usuario,
+            'role' : user.role
+        }
         if(user.password === password){
-            var token = jwt.sign(user, SECRET, { expiresIn: 300 }) ;
+            var token = jwt.sign(usuario, SECRET, { expiresIn: 300 }) ;
             var refreshToken = randtoken.uid(256) ;
             refreshTokens[refreshToken] = username;
-            res.json({token: 'JWT ' + token, refreshToken: refreshToken}) ;
+            res.json({token: 'JWT ' + token, refreshToken: refreshToken, user_id : user.user_id}) ;
         }else{
             res.send(401);
         }
