@@ -51,6 +51,7 @@ app.post('/login', function (req, res, next) {
                 res.json({token: 'JWT ' + token, 
                 refreshToken: refreshToken, 
                 user_id : user.user_id, 
+                username : user.usuario,
                 doctor : {
                     doctor_id : value.doctor_id,
                     nombre : value.nombre,
