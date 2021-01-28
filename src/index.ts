@@ -31,7 +31,8 @@ var bodyParser = require('body-parser');
 var jwt = require('jsonwebtoken') ;
 var randtoken = require('rand-token'); 
 var app = express();
-app.use(bodyParser.json(), bodyParser.urlencoded({ extended: true }));
+//var cors = require('cors');
+app.use(bodyParser.json(), bodyParser.urlencoded({ extended: true }));//, cors);
 
 app.post('/login', function (req, res, next) { 
     var username = req.body.username; 
@@ -47,7 +48,15 @@ app.post('/login', function (req, res, next) {
                 var token = jwt.sign(usuario, SECRET, { expiresIn: 300 }) ;
                 var refreshToken = randtoken.uid(256) ;
                 refreshTokens[refreshToken] = username;
-                res.json({token: 'JWT ' + token, refreshToken: refreshToken, user_id : user.user_id, doctor_id : value.doctor_id}) ;
+                res.json({token: 'JWT ' + token, 
+                refreshToken: refreshToken, 
+                user_id : user.user_id, 
+                doctor : {
+                    doctor_id : value.doctor_id,
+                    nombre : value.nombre,
+                    apellido_paterno : value.apellido_paterno,
+                    apellido_materno : value.apellido_materno
+                }}) ;
             }).catch(function(err){
                 console.log(err)
                 res.status(500).send(err);
