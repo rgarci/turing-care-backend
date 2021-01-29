@@ -31,8 +31,8 @@ var bodyParser = require('body-parser');
 var jwt = require('jsonwebtoken') ;
 var randtoken = require('rand-token'); 
 var app = express();
-//var cors = require('cors');
-app.use(bodyParser.json(), bodyParser.urlencoded({ extended: true }));//, cors);
+var cors = require('cors');
+app.use(bodyParser.json(), bodyParser.urlencoded({ extended: true }), cors());
 
 app.post('/login', function (req, res, next) { 
     var username = req.body.username; 
@@ -128,6 +128,32 @@ app.get('/doctor', passport.authenticate('jwt'), function(req, res){
     console.log(id_doctor);
     doctorSvc.getDoctor(id_doctor).then(function (value) {
         let doc : DoctorItf = value[0];
+        if(doc === undefined){
+            res.status(500).send('No se encontró al doctor ' + id_doctor);
+        }else{
+            res.send(doc);
+        }
+    }).catch(function(err){
+        res.status(500).send(err);
+    })
+});
+
+/**
+ * Endpoint para obtención de la información de doctor publica
+ */
+app.get('/info/doctor/:id', function(req, res, next){
+    let id_doctor = req.params.id;
+    console.log(id_doctor);
+    doctorSvc.getDoctor(id_doctor).then(function (value) {
+        let doc : DoctorItf = value;
+        doc.clinica_id = null;
+        doc.user_id=null;
+        doc.url_cedula="";
+        doc.url_foto = "";
+        doc.status = null;
+
+        console.log(doc);
+        
         if(doc === undefined){
             res.status(500).send('No se encontró al doctor ' + id_doctor);
         }else{
