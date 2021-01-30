@@ -32,7 +32,11 @@ var jwt = require('jsonwebtoken') ;
 var randtoken = require('rand-token'); 
 var app = express();
 var cors = require('cors');
-app.use(bodyParser.json(), bodyParser.urlencoded({ extended: true }), cors());
+
+//app.use(bodyParser.json({extended:true}), bodyParser.urlencoded({ extended: true }))//, cors());
+ app.use(bodyParser.json({limit: '10mb', extended: true}),
+     bodyParser.urlencoded({limit: '10mb', extended: true})
+ ,cors() );
 
 app.post('/login', function (req, res, next) { 
     var username = req.body.username; 
@@ -83,7 +87,7 @@ app.post('/login', function (req, res, next) {
       res.json({token: 'JWT ' + token});
     }
     else {
-      res.send(401);
+      res.sendStatus(401);
     }
   });
 
@@ -123,8 +127,8 @@ passport.use(new JwtStrategy(opts, function (jwtPayload, done) {
 /**
  * Endpoint para obtención de doctor
  */
-app.get('/doctor', passport.authenticate('jwt'), function(req, res){
-    let id_doctor = req.query.id;
+app.get('/doctor/:id', passport.authenticate('jwt'), function(req, res){
+    let id_doctor = req.params.id;
     console.log(id_doctor);
     doctorSvc.getDoctor(id_doctor).then(function (value) {
         let doc : DoctorItf = value[0];
@@ -145,7 +149,7 @@ app.get('/info/doctor/:id', function(req, res, next){
     let id_doctor = req.params.id;
     console.log(id_doctor);
     doctorSvc.getDoctor(id_doctor).then(function (value) {
-        let doc : DoctorItf = value;
+        let doc : DoctorItf = value[0];
         doc.clinica_id = null;
         doc.user_id=null;
         doc.url_cedula="";

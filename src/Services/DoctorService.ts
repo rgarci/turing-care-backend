@@ -10,6 +10,8 @@ import { DoctorItf } from "../interfaces/DoctorItf";
 /**
  * Servicio para la conexión con api de doctores
  */
+
+
 export class DoctorService{
     /**
      * Crea un médico
@@ -78,12 +80,16 @@ export class DoctorService{
             doc.telefono = d.telefono;
             doc.status = d.status;
 
-            fs.writeFile('./files/' + value[0].user_id + '/cedula.txt', d.url_cedula, {encoding : 'base64'}, function(err){
-                if (err) throw err;
-            });
-            fs.writeFile('./files/' + value[0].user_id + '/foto.txt', d.url_foto, {encoding : 'base64'}, function(err){
-                if (err) throw err;
-            });
+            if(d.url_cedula){
+                fs.writeFile('./files/' + value[0].user_id + '/cedula.txt', d.url_cedula, {encoding : 'base64'}, function(err){
+                    if (err) throw err;
+                });
+            }
+           if(d.url_foto) {
+               fs.writeFile('./files/' + value[0].user_id + '/foto.txt', d.url_foto, {encoding : 'base64'}, function(err){
+                   if (err) throw err;
+               });
+           }
 
             return doctorRepo.save(doc);
         })
@@ -102,13 +108,9 @@ export class DoctorService{
      * Obtener doctor por id
      * @param id id de doctor
      */
-    getDoctor(id : number) : Promise<Doctor>{
+    getDoctor(id : number) : Promise<Doctor[]>{
         let doctorRepo = getCustomRepository(DoctorRepository);
-        return doctorRepo.findById(id).then(function(value){
-            return value[0];
-        }).catch(function(error){
-            throw new Error('Error al crear al usuario' + error);
-        });
+        return doctorRepo.findById(id);
     }
 
     /**

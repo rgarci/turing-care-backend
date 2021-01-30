@@ -27,6 +27,7 @@ export class PatientService{
         patient.alergias = patientReq.alergias;
         patient.enfermedades_cronicas = patientReq.enfermedades_cronicas;
         patient.tratamientos_vigentes = patientReq.tratamientos_vigentes;
+        patient.operaciones_previas = patientReq.operaciones_previas;
 
         let patientRepo : PatientRepository = getCustomRepository(PatientRepository);
         
@@ -54,6 +55,7 @@ export class PatientService{
             patient.alergias = patientReq.alergias;
             patient.enfermedades_cronicas = patientReq.enfermedades_cronicas;
             patient.tratamientos_vigentes = patientReq.tratamientos_vigentes;
+            patient.operaciones_previas = patientReq.operaciones_previas;
             
             return patientRepo.save(patient);
         })
