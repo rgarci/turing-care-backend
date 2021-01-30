@@ -143,6 +143,32 @@ app.get('/doctor/:id', passport.authenticate('jwt'), function(req, res){
 });
 
 /**
+ * Endpoint para obtención de la información de doctor publica
+ */
+app.get('/info/doctor/:id', function(req, res, next){
+    let id_doctor = req.params.id;
+    console.log(id_doctor);
+    doctorSvc.getDoctor(id_doctor).then(function (value) {
+        let doc : DoctorItf = value[0];
+        doc.clinica_id = null;
+        doc.user_id=null;
+        doc.url_cedula="";
+        doc.url_foto = "";
+        doc.status = null;
+
+        console.log(doc);
+        
+        if(doc === undefined){
+            res.status(500).send('No se encontró al doctor ' + id_doctor);
+        }else{
+            res.send(doc);
+        }
+    }).catch(function(err){
+        res.status(500).send(err);
+    })
+});
+
+/**
  * Endpoint para crear un doctor
  */
 app.post('/doctor', passport.authenticate('jwt'), function (req, res) {
