@@ -8,6 +8,8 @@ import { PatientService } from "./Services/PatientService";
 import { PatientItf } from "./interfaces/PatientItf";
 import { UserService } from "./Services/UserService";
 import { Usuario } from "./entity/Usuario";
+ import {ClinicService} from "./Services/ClinicService";
+ import {ClinicItf} from "./interfaces/ClinicItf";
 
 /**
  * Puerto del servidor
@@ -24,6 +26,7 @@ var doctorSvc : DoctorService = new DoctorService();
 var registerSvc : RegisterService = new RegisterService();
 var patientSvc : PatientService = new PatientService();
 var usrSvc : UserService = new UserService();
+var clinicSvc: ClinicService = new ClinicService();
 var refreshTokens = {} ;
 var SECRET = "SECRETO_PARA_ENCRIPTACION" ;
 var express = require('express');
@@ -324,6 +327,55 @@ app.get('/doctor/:idDoctor/pacientes', passport.authenticate('jwt'), function(re
         res.status(500).send(err);
     });
 });
+
+ /**
+  * Endpoint para localizar una clinica
+  */
+ app.get('/clinica/:id', passport.authenticate('jwt'), function(req, res){
+     let idClinic = req.params.id;
+     console.log(idClinic);
+     clinicSvc.getClinic(idClinic).then(function (value){
+         let clinic : ClinicItf = value;
+         if(clinic === undefined){
+             res.status(500).send('No se encontró la clinica ' + idClinic);
+         }else{
+             res.send(clinic);
+         }
+     }).catch(function(err){
+         res.status(500).send(err);
+     });
+ });
+
+ /**
+  * Endpoint para localizar una clinica por nombre o todas las clinicas
+  */
+ app.get('/clinica', passport.authenticate('jwt'), function(req, res){
+     let name = req.query.name;
+     if(name) {
+         console.log(name);
+         clinicSvc.getClinicByName(name).then(function (value){
+             let clinic : ClinicItf = value[0];
+             if(clinic === undefined){
+                 res.status(500).send('No se encontró la clinica ' + name);
+             }else{
+                 res.send(clinic);
+             }
+         }).catch(function(err){
+             res.status(500).send(err);
+         });
+     } else {
+         clinicSvc.getClinics().then(function (value){
+             if(!value){
+                 res.status(500).send('No se encontraron clinicas');
+             }else{
+                 res.send(value);
+             }
+         }).catch(function(err){
+             res.status(500).send(err);
+         });
+     }
+
+ });
 
 /**
  * Inicia el servidor

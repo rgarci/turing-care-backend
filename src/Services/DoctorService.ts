@@ -122,7 +122,7 @@ export class DoctorService{
         return doctorRepo.findByUserId(id_user).then(function(value){
             return value[0];
         }).catch(function(error){
-            throw new Error('Error al crear al usuario' + error);
+            throw new Error('Error al obtener al doctor' + error);
         });
     }
 }
