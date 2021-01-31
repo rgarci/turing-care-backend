@@ -247,6 +247,24 @@ app.put('/registro', passport.authenticate('jwt'), function (req, res) {
     }
 });
 
+ /**
+  * Endpoint para eliminar un registro
+  */
+ app.delete('/registro/:id', passport.authenticate('jwt'), function (req, res) {
+     try {
+         let id  = req.params.id;
+         registerSvc.deleteRegister(id).then(function(value){
+             const response = {
+                 message: 'Registro eliminado',
+                 idRegistro: id
+             }
+             res.status(200).send(response);
+         })
+     } catch (error) {
+         res.status(500).send(error);
+     }
+ });
+
 /**
  * Endpoint para obtener los registros de un paciente
  */
@@ -310,6 +328,26 @@ app.put('/paciente', passport.authenticate('jwt'), function (req, res) {
         res.status(500).send(error);
     }
 });
+
+ /**
+  * Endpoint para eliminar un paciente y sus registros.
+  */
+ app.delete('/paciente/:id', passport.authenticate('jwt'), function (req, res) {
+     try {
+         let id  = req.params.id;
+         registerSvc.deleteHistorial(id).then(function (value) {
+             patientSvc.deletePatient(id).then(function(value){
+                 const response = {
+                     message: 'Paciente eliminado',
+                     idPaciente: id
+                 }
+                 res.status(200).send(response);
+             })
+         })
+     } catch (error) {
+         res.status(500).send(error);
+     }
+ });
 
 /**
  * Endpoint para obtener los pacientes de un doctor

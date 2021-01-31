@@ -1,6 +1,6 @@
 import { Register  } from "../entity/Register";
 import  * as fs from "fs";
-import { getCustomRepository } from "typeorm";
+import {DeleteResult, getCustomRepository} from "typeorm";
 import { RegisterRepository } from "../Repositories/RegisterRepository";
 
 import { RegisterItf } from "../interfaces/RegisterItf";
@@ -81,7 +81,7 @@ export class RegisterService{
      */
     deleteRegister( id_register: number){
         let registerRepo : RegisterRepository = getCustomRepository(RegisterRepository);
-        registerRepo.delete(id_register);
+        return registerRepo.delete(id_register);
     }
 
     /**
@@ -100,5 +100,14 @@ export class RegisterService{
     getHistorial(id_patient): Promise<Register[]>{
         let registerRepo : RegisterRepository = getCustomRepository(RegisterRepository);
         return registerRepo.findByPatientId(id_patient);
+    }
+
+    /**
+     * Elimina los registros de un paciente
+     * @param id_patient id de paciente
+     */
+    deleteHistorial(id_patient): Promise<DeleteResult>{
+        let registerRepo : RegisterRepository = getCustomRepository(RegisterRepository);
+        return registerRepo.delete({ paciente_id: id_patient });
     }
 }
