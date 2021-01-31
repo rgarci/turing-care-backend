@@ -1,6 +1,5 @@
 import { DeleteResult, getCustomRepository } from "typeorm";
 import { Patient } from "../entity/Patient";
-import { Register } from "../entity/Register";
 import { PatientItf } from "../interfaces/PatientItf";
 import { PatientRepository } from "../Repositories/PatientRepository";
 
@@ -63,10 +62,10 @@ export class PatientService{
     }
 
     /**
-     * Elimina un paciente dado un id
+     * Elimina un paciente dado un id.
      * @param id_patient id de paciente
      */
-    deletePatient(id_patient : number) : Promise<DeleteResult> {
+    deletePatient(id_patient : number): Promise<any>{
         let patientRepo : PatientRepository = getCustomRepository(PatientRepository);
         return patientRepo.delete(id_patient);
     }
@@ -76,7 +75,7 @@ export class PatientService{
      * @param id id de paciente
      */
     gatPatient(id: number) : Promise<Patient[]>{
-        let patientRepo = getCustomRepository(PatientRepository);
+        let patientRepo = getCustomRepository(PatientRepository)
         return patientRepo.findById(id);
     }
 

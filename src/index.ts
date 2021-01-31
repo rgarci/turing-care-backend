@@ -32,7 +32,8 @@ var SECRET = "SECRETO_PARA_ENCRIPTACION" ;
 var express = require('express');
 var bodyParser = require('body-parser');
 var jwt = require('jsonwebtoken') ;
-var randtoken = require('rand-token'); 
+var randtoken = require('rand-token');
+var nodemailer = require("nodemailer");
 var app = express();
 var cors = require('cors');
 
@@ -246,6 +247,24 @@ app.put('/registro', passport.authenticate('jwt'), function (req, res) {
     }
 });
 
+ /**
+  * Endpoint para eliminar un registro
+  */
+ app.delete('/registro/:id', passport.authenticate('jwt'), function (req, res) {
+     try {
+         let id  = req.params.id;
+         registerSvc.deleteRegister(id).then(function(value){
+             const response = {
+                 message: 'Registro eliminado',
+                 idRegistro: id
+             }
+             res.status(200).send(response);
+         })
+     } catch (error) {
+         res.status(500).send(error);
+     }
+ });
+
 /**
  * Endpoint para obtener los registros de un paciente
  */
@@ -309,6 +328,26 @@ app.put('/paciente', passport.authenticate('jwt'), function (req, res) {
         res.status(500).send(error);
     }
 });
+
+ /**
+  * Endpoint para eliminar un paciente y sus registros.
+  */
+ app.delete('/paciente/:id', passport.authenticate('jwt'), function (req, res) {
+     try {
+         let id  = req.params.id;
+         registerSvc.deleteHistorial(id).then(function (value) {
+             patientSvc.deletePatient(id).then(function(value){
+                 const response = {
+                     message: 'Paciente eliminado',
+                     idPaciente: id
+                 }
+                 res.status(200).send(response);
+             })
+         })
+     } catch (error) {
+         res.status(500).send(error);
+     }
+ });
 
 /**
  * Endpoint para obtener los pacientes de un doctor
@@ -376,6 +415,75 @@ app.get('/doctor/:idDoctor/pacientes', passport.authenticate('jwt'), function(re
      }
 
  });
+
+ /**
+  * Endpoint para enviar correo de la información de registro
+  */
+ app.post("/sendmail", (req, res) => {
+     console.log("request came");
+     let data = req.body;
+     sendMail(data,(info) => {
+         const response = {
+             response: info,
+             messageUrl: nodemailer.getTestMessageUrl(info)
+         }
+         res.send(response);
+     }).catch((error) => {
+         console.log(error)
+         res.status(400).send(error);
+     });
+ });
+
+ /**
+  * Método para enviar correo de la información de registro,
+  * utiliza una cuenta de SMTP del generador de correos ethereal
+  */
+ async function sendMail(data, callback) {
+     // create reusable transporter object using the default SMTP transport
+     let testAccount = await nodemailer.createTestAccount();
+     let transporter = nodemailer.createTransport({
+
+         host: 'smtp.ethereal.email',
+         port: 587,
+         secure: false,
+         auth: {
+             user: testAccount.user,
+             pass: testAccount.pass
+         },
+     });
+
+     let att = {}
+     if (data.url_foto) {
+         att = {
+             filename: "Foto.jpg",
+             contentType: 'image/jpeg',
+             content: Buffer.from(data.url_foto.split("base64,")[1], "base64"),
+         }
+     }
+     let mailOptions = {
+         from: 'TuringCare<dev@turingCare.com>', // sender address
+         to: 'admin@TuringCare.com',//data.email,
+         subject: "Datos de registro", // Subject line
+         html: `<h1>Hola,hemos recibido una solicitud de registro de doctor: </h1><br>
+            <p>Nombre: ${data.nombre}</p>
+            <p>Apellidos: ${data.apellido_paterno} ${data.apellido_materno}</p>
+            <p>correo: ${data.email}</p>
+            <p>telefono: ${data.telefono}</p>
+            <p>curp: ${data.curp}</p>
+            <p>cedula: ${data.url_cedula}</p>
+            <p>especialidad: ${data.especialidad}</p>
+            <p>Clinica: ${data.clinica}</p>
+            <p>Dirección clinica: ${data.direccion_clinica}</p>
+            <h4>¡Gracias!</h4>`,
+         attachments: [
+             att
+         ]
+     };
+
+     // send mail with defined transport object
+     let info = await transporter.sendMail(mailOptions);
+     callback(info);
+ }
 
 /**
  * Inicia el servidor
