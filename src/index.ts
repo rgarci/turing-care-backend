@@ -52,24 +52,36 @@ app.post('/login', function (req, res, next) {
             'role' : user.role
         }
         if(user.password === password){
-            doctorSvc.getDoctorByUser(user.user_id).then(function(value){
+            if(usuario.role == 'admin') {
                 var token = jwt.sign(usuario, SECRET, { expiresIn: 300 }) ;
                 var refreshToken = randtoken.uid(256) ;
                 refreshTokens[refreshToken] = username;
-                res.json({token: 'JWT ' + token, 
-                refreshToken: refreshToken, 
-                user_id : user.user_id, 
-                username : user.usuario,
-                doctor : {
-                    doctor_id : value.doctor_id,
-                    nombre : value.nombre,
-                    apellido_paterno : value.apellido_paterno,
-                    apellido_materno : value.apellido_materno
-                }}) ;
-            }).catch(function(err){
-                console.log(err)
-                res.status(500).send(err);
-            });
+                res.json({token: 'JWT ' + token,
+                    refreshToken: refreshToken,
+                    user_id : user.user_id,
+                    username : user.usuario})
+                res.send(200);
+            }else {
+                doctorSvc.getDoctorByUser(user.user_id).then(function(value){
+                    var token = jwt.sign(usuario, SECRET, { expiresIn: 300 }) ;
+                    var refreshToken = randtoken.uid(256) ;
+                    refreshTokens[refreshToken] = username;
+                    res.json({token: 'JWT ' + token,
+                        refreshToken: refreshToken,
+                        user_id : user.user_id,
+                        username : user.usuario,
+                        doctor : {
+                            doctor_id : value.doctor_id,
+                            nombre : value.nombre,
+                            apellido_paterno : value.apellido_paterno,
+                            apellido_materno : value.apellido_materno
+                        }}) ;
+                }).catch(function(err){
+                    console.log(err)
+                    res.status(500).send(err);
+                });
+            }
+
         }else{
             res.send(401);
         }
@@ -91,7 +103,7 @@ app.post('/login', function (req, res, next) {
       res.json({token: 'JWT ' + token});
     }
     else {
-      res.sendStatus(401);
+      res.status(400).send("Refresh token invalid")
     }
   });
 
@@ -145,6 +157,21 @@ app.get('/doctor/:id', passport.authenticate('jwt'), function(req, res){
         res.status(500).send(err);
     })
 });
+
+ /**
+  * Endpoint para obtención de la lista doctores
+  */
+ app.get('/doctor', passport.authenticate('jwt'), function(req, res){
+     doctorSvc.getDoctorList().then(function (value){
+         if(!value){
+             res.status(500).send('No se encontraron doctores');
+         }else{
+             res.send(value);
+         }
+     }).catch(function(err){
+         res.status(500).send(err);
+     });
+ });
 
 /**
  * Endpoint para obtención de la información de doctor publica
