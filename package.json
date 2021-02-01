@@ -1,14 +1,25 @@
 {
-  "name": "project",
-  "version": "1.0.0",
-  "description": "proyecto nodejs para la mateeria AWA",
-  "main": "index.js",
-  "scripts": {
-    "test": "test"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "express": "^4.17.1"
-  }
+   "name": "project",
+   "version": "0.0.1",
+   "description": "Awesome project developed with TypeORM.",
+   "devDependencies": {
+      "ts-node": "3.3.0",
+      "@types/node": "^8.0.29",
+      "typescript": "3.3.3333"
+   },
+   "dependencies": {
+      "cors": "^2.8.5",
+      "express": "^4.17.1",
+      "jsonwebtoken": "^8.5.1",
+      "mysql": "^2.14.1",
+      "nodemailer": "^6.4.17",
+      "passport": "^0.4.1",
+      "passport-jwt": "^4.0.0",
+      "rand-token": "^1.0.1",
+      "reflect-metadata": "^0.1.10",
+      "typeorm": "0.2.30"
+   },
+   "scripts": {
+      "start": "ts-node src/index.ts"
+   }
 }
