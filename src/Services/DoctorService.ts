@@ -114,6 +114,14 @@ export class DoctorService{
     }
 
     /**
+     * Obtener todos los doctores
+     */
+    getDoctorList() : Promise<Doctor[]>{
+        let doctorRepo = getCustomRepository(DoctorRepository);
+        return doctorRepo.find();
+    }
+
+    /**
      * Obtiene el doctor por el user_id
      * @param id_user id del usuario
      */
